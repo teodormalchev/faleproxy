@@ -32,15 +32,27 @@ testApp.post('/fetch', async (req, res) => {
       return this.nodeType === 3; // Text nodes only
     }).each(function() {
       // Replace text content but not in URLs or attributes
+      // Use case-preserving replacement: YALE->FALE, Yale->Fale, yale->fale
       const text = $(this).text();
-      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+      const newText = text.replace(/yale/gi, function(match) {
+        if (match === 'YALE') return 'FALE';
+        if (match === 'Yale') return 'Fale';
+        if (match === 'yale') return 'fale';
+        return match.replace(/y/i, 'F').replace(/ale/i, 'ale');
+      });
       if (text !== newText) {
         $(this).replaceWith(newText);
       }
     });
     
-    // Process title separately
-    const title = $('title').text().replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+    // Process title separately with case-preserving replacement
+    const titleText = $('title').text();
+    const title = titleText.replace(/yale/gi, function(match) {
+      if (match === 'YALE') return 'FALE';
+      if (match === 'Yale') return 'Fale';
+      if (match === 'yale') return 'fale';
+      return match.replace(/y/i, 'F').replace(/ale/i, 'ale');
+    });
     $('title').text(title);
     
     return res.json({ 

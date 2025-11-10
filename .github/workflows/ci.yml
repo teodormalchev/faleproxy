@@ -32,30 +32,10 @@ jobs:
     - name: Upload coverage report
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report
+        name: coverage-report-${{ matrix.node-version }}
         path: coverage/
         
-  deploy:
-    needs: test
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-        
-    - name: Install Vercel CLI
-      run: npm install --global vercel@latest
-      
-    - name: Pull Vercel Environment Information
-      run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-      
-    - name: Build Project Artifacts
-      run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-      
-    - name: Deploy Project Artifacts to Vercel
-      run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+  # Note: Vercel deployments are handled by Vercel's GitHub integration.
+  # Vercel is configured to deploy only when the 'test' check passes (required check).
+  # - Preview deployments happen automatically on PRs after tests pass
+  # - Production deployments happen automatically on main branch after tests pass
