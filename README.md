@@ -68,17 +68,22 @@ The repository includes a GitHub Actions workflow configuration in `.github/work
 1. Runs on pushes to main/master branches and on pull requests
 2. Tests the application on multiple Node.js versions (18.x, 20.x)
 3. Generates and uploads test coverage reports
-4. Automatically deploys to Vercel (when pushing to main/master)
+4. Gates deployments: Vercel only deploys when tests pass
+
+### Deployment Strategy
+
+- **Preview Deployments**: Automatically created for pull requests after tests pass
+- **Production Deployments**: Automatically deployed to production when merging to main, only if tests pass
 
 ### Setting up Vercel Deployment
 
-To enable automatic deployments to Vercel, you need to:
+Deployments are handled by Vercel's GitHub integration:
 
 1. Create a Vercel account and link your repository
 2. Create a Vercel project for your application
-3. Generate a Vercel token and add it as a secret in your GitHub repository:
-   - Go to Settings → Secrets → Actions
-   - Add a new secret named `VERCEL_TOKEN` with your Vercel token
+3. In Vercel project settings, configure:
+   - **Git Integration**: Enable "Wait for tests to complete" or set the `test` job as a required check
+   - This ensures Vercel only deploys after the GitHub Actions tests pass
 
 ## Technologies Used
 
